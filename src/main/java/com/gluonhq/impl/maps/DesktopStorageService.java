@@ -25,37 +25,50 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gluonhq.impl.maps;
 
-import java.text.SimpleDateFormat
 
-Date buildTimeAndDate = new Date()
-ext {
-    buildBy = System.properties['user.name']
-    buildDate = new SimpleDateFormat('yyyy-MM-dd').format(buildTimeAndDate)
-    buildTime = new SimpleDateFormat('HH:mm:ss.SSSZ').format(buildTimeAndDate)
-    buildRevision = versioning.info.commit
-    buildCreatedBy = "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString()
-}
+import java.io.File;
+import java.util.Optional;
 
-jar {
-    manifest {
-        attributes(
-            'Built-By': buildBy,
-            'Created-By': buildCreatedBy,
-            'Build-Date': buildDate,
-            'Build-Time': buildTime,
-            'Build-Revision': buildRevision,
-            'Specification-Title': project.name,
-            'Specification-Version': project.version,
-            'Specification-Vendor': 'gluonhq.com',
-            'Implementation-Title': project.name,
-            'Implementation-Version': project.version,
-            'Implementation-Vendor': 'gluonhq.com'
-        )
+/**
+ * An implementation of StorageService, it currently writes to the users home directory under '.gluon'
+ */
+public class DesktopStorageService {
+
+    public Optional<File> getPrivateStorage() {
+        try {
+            String home = System.getProperty("user.home");
+            File f = new File(home, ".gluon");
+            if (!f.isDirectory()) {
+                f.mkdirs();
+            }
+            return Optional.of(f);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
-    metaInf {
-        from rootProject.file('.')
-        include 'LICENSE'
+    public Optional<File> getPublicStorage(String subdirectory) {
+        try {
+            String home = System.getProperty("user.home");
+            File f;
+            if (null == subdirectory) {
+                f = new File(home);
+            } else {
+                f = new File(home, subdirectory);
+            }
+            return Optional.of(f);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    public boolean isExternalStorageWritable() {
+        return true;
+    }
+
+    public boolean isExternalStorageReadable() {
+        return true;
     }
 }

@@ -27,8 +27,6 @@
  */
 package com.gluonhq.impl.maps;
 
-import com.gluonhq.charm.down.Services;
-import com.gluonhq.charm.down.plugins.StorageService;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.concurrent.Task;
 import javafx.scene.image.Image;
@@ -59,11 +57,12 @@ public class ImageRetriever {
     static File cacheRoot;
     static boolean hasFileCache = false;
     static CacheThread cacheThread = null;
+    private static DesktopStorageService desktopStorageService = new DesktopStorageService();
 
     static {
         try {
-            File storageRoot = Services.get(StorageService.class)
-                    .flatMap(StorageService::getPrivateStorage)
+            File storageRoot = desktopStorageService
+                    .getPrivateStorage()
                     .orElseThrow(() -> new IOException("Storage Service is not available"));
             
             cacheRoot = new File(storageRoot, ".gluonmaps");
@@ -129,10 +128,10 @@ public class ImageRetriever {
 
     private static class CacheThread extends Thread {
 
-        private boolean active = true;
-        private String basePath;
         private final Set<String> offered = new HashSet<>();
         private final BlockingDeque<String> deque = new LinkedBlockingDeque<>();
+        private boolean active = true;
+        private String basePath;
 
         public CacheThread(String basePath) {
             this.basePath = basePath;

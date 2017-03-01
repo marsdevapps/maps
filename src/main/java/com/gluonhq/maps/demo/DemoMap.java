@@ -27,32 +27,22 @@
  */
 package com.gluonhq.maps.demo;
 
-import com.gluonhq.charm.down.Platform;
-import com.gluonhq.charm.down.Services;
-import com.gluonhq.charm.down.plugins.Position;
-import com.gluonhq.charm.down.plugins.PositionService;
 import com.gluonhq.maps.MapLayer;
 import com.gluonhq.maps.MapPoint;
 import com.gluonhq.maps.MapView;
 import javafx.application.Application;
-import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.stage.Screen;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 
 /**
- *
  * Demo class showing a simple map app
  */
 public class DemoMap extends Application {
@@ -66,72 +56,35 @@ public class DemoMap extends Application {
             LOGGER.log(Level.SEVERE, "Error reading logging properties file", e);
         }
     }
-    
+
     private MapPoint mapPoint;
-            
+
+    public static void main(String[] args) {
+        launch(args);
+    }
     @Override
     public void start(Stage stage) throws Exception {
 
         MapView view = new MapView();
-        view.addLayer(positionLayer());
-        view.setZoom(3); 
+        view.addLayer(myDemoLayer());
+        view.setZoom(3);
         Scene scene;
-        if (Platform.isDesktop()) {
-            scene = new Scene(view, 600, 700);
-            stage.setTitle("Gluon Maps Demo");
-        } else {
-            BorderPane bp = new BorderPane();
-            bp.setCenter(view);
-            final Label label = new Label("Gluon Maps Demo");
-            label.setAlignment(Pos.CENTER);
-            label.setMaxWidth(Double.MAX_VALUE);
-            label.setStyle("-fx-background-color: dimgrey; -fx-text-fill: white;");
-            bp.setTop(label);
-            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-            scene = new Scene(bp, bounds.getWidth(), bounds.getHeight());
-        }
+        scene = new Scene(view, 600, 700);
+        stage.setTitle("Gluon Maps Demo");
+
         stage.setScene(scene);
         stage.show();
 
+        mapPoint = new MapPoint(50., 4.);
         view.flyTo(1., mapPoint, 2.);
     }
-    
-//    private MapLayer myDemoLayer () {
-//        PoiLayer answer = new PoiLayer();
-//        Node icon1 = new Circle(7, Color.BLUE);
-//        answer.addPoint(new MapPoint(50.8458,4.724), icon1);
-//        Node icon2 = new Circle(7, Color.GREEN);
-//        answer.addPoint(new MapPoint(37.396256,-121.953847), icon2);
-//        return answer;
-//    }
-    
-    private MapLayer positionLayer() {
-        return Services.get(PositionService.class)
-                .map(positionService -> {
-                    ReadOnlyObjectProperty<Position> positionProperty = positionService.positionProperty();
-                    Position position = positionProperty.get();
-                    if (position == null) {
-                        position = new Position(50.,4.);
-                    }
-                    mapPoint = new MapPoint(position.getLatitude(), position.getLongitude());
-                    LOGGER.log(Level.INFO, "Initial Position: " + position.getLatitude() + ", " + position.getLongitude());
-                        
-                    PoiLayer answer = new PoiLayer();
-                    answer.addPoint(mapPoint, new Circle(7, Color.RED));
 
-                    positionProperty.addListener(e -> {
-                        Position pos = positionProperty.get();
-                        LOGGER.log(Level.INFO, "New Position: " + pos.getLatitude() + ", " + pos.getLongitude());
-                        mapPoint.update(pos.getLatitude(), pos.getLongitude());
-                    });
-                    return answer;
-                })
-                .orElseGet(() -> {
-                    LOGGER.log(Level.WARNING, "Position Service not available");
-                    PoiLayer answer = new PoiLayer();
-                    mapPoint = new MapPoint(50., 4.);
-                    answer.addPoint(mapPoint, new Circle(7, Color.RED));
-                    return answer;
-                });
+    private MapLayer myDemoLayer() {
+        PoiLayer answer = new PoiLayer();
+        Node icon1 = new Circle(7, Color.BLUE);
+        answer.addPoint(new MapPoint(50.8458, 4.724), icon1);
+        Node icon2 = new Circle(7, Color.GREEN);
+        answer.addPoint(new MapPoint(37.396256, -121.953847), icon2);
+        return answer;
     }
 }
