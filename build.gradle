@@ -27,7 +27,7 @@
  */
 
 buildscript {
-    ext.kotlin_version = '1.0.6'
+    ext.kotlin_version = '1.1.0'
     repositories {
         mavenLocal()
         mavenCentral()
@@ -54,7 +54,7 @@ dependencies {
     testCompile 'org.jetbrains.kotlin:kotlin-test-junit:1.0.4'
     compile 'io.github.microutils:kotlin-logging:1.4'
 
-    compile 'no.tornado:tornadofx:1.6.3-SNAPSHOT'
+    compile 'no.tornado:tornadofx:1.7.0-SNAPSHOT'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.testfx:testfx-core:4.0.4-alpha'
