@@ -50,15 +50,7 @@ repositories {
 
 dependencies {
     compile 'org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version'
-    compile 'org.jetbrains.kotlin:kotlin-test-junit:1.0.4'
-    testCompile 'org.jetbrains.kotlin:kotlin-test-junit:1.0.4'
-    compile 'io.github.microutils:kotlin-logging:1.4'
-
     compile 'no.tornado:tornadofx:1.7.0-SNAPSHOT'
-
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.testfx:testfx-core:4.0.4-alpha'
-    testCompile 'org.testfx:testfx-junit:4.0.4-alpha'
 }
 
 task sourcesJar (type: Jar) {
