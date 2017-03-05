@@ -31,6 +31,7 @@ import com.gluonhq.maps.MapLayer
 import com.gluonhq.maps.MapPoint
 import com.gluonhq.maps.MapView
 import com.gluonhq.maps.demo.PoiLayer
+import javafx.geometry.Pos
 import javafx.scene.paint.Color
 import javafx.scene.shape.Circle
 import tornadofx.*
@@ -48,13 +49,27 @@ class MapTestView : View("Map Demo") {
         view.zoom = 3.0
 
     }
-
     override val root = borderpane {
 
-        top = label("top")
-        bottom = label("bottom")
-        left = label("left")
-        right = label("right")
+        top {
+            useMaxWidth = true
+            useMaxHeight = true
+            label("top") {
+                maxWidth = Double.POSITIVE_INFINITY
+                alignment = Pos.CENTER
+            }
+        }
+        bottom = label("bottom") {
+            maxWidth = Double.POSITIVE_INFINITY
+            alignment = Pos.CENTER
+
+        }
+        left = label("left") {
+            maxHeight = Double.POSITIVE_INFINITY
+        }
+        right = label("right") {
+            maxHeight = Double.POSITIVE_INFINITY
+        }
         center = view
 
         prefHeight = 400.0
