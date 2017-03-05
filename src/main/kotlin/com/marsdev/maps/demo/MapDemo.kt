@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Gluon
+ * Copyright (c) 2017, mars dev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,44 +25,49 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.marsdev.maps.demo
 
-buildscript {
-    ext.kotlin_version = '1.1.0'
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        jcenter()
+import com.gluonhq.maps.MapLayer
+import com.gluonhq.maps.MapPoint
+import com.gluonhq.maps.MapView
+import com.gluonhq.maps.demo.PoiLayer
+import javafx.scene.paint.Color
+import javafx.scene.shape.Circle
+import tornadofx.*
+
+
+class MapTestApp : App(MapTestView::class)
+
+class MapTestView : View("Map Demo") {
+    val view: MapView
+
+    init {
+        view = MapView()
+        view.addLayer(myDemoLayer())
+        view.setCenter(50.8458, 4.724)
+        view.zoom = 3.0
+
     }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+    override val root = borderpane {
+
+        top = label("top")
+        bottom = label("bottom")
+        left = label("left")
+        right = label("right")
+        center = view
+
+        prefHeight = 400.0
+        prefWidth = 600.0
+    }
+
+    private fun myDemoLayer(): MapLayer {
+        val answer = PoiLayer()
+        val icon1 = Circle(7.0, Color.BLUE)
+        answer.addPoint(MapPoint(50.8458, 4.724), icon1)
+        val icon2 = Circle(7.0, Color.GREEN)
+        answer.addPoint(MapPoint(37.396256, -121.953847), icon2)
+        return answer
     }
 }
 
-apply plugin: 'kotlin'
-apply plugin: 'maven'
-apply plugin: 'java'
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-    jcenter()
-}
-
-dependencies {
-    compile 'org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version'
-    compile 'no.tornado:tornadofx:1.7.1-SNAPSHOT'
-}
-
-task sourcesJar (type: Jar) {
-    from sourceSets.main.allSource
-    classifier = 'sources'
-}
-
-task javadocJar (type: Jar, dependsOn: javadoc) {
-    from javadoc.destinationDir
-    classifier = 'javadoc'
-}
-
-artifacts {
-    archives sourcesJar, javadocJar
-}
