@@ -45,6 +45,7 @@ class MapTestView : View("Map Demo") {
     val view: MapView
 
     init {
+        ImageRetriever.setMapboxAccessToken("")
         ImageRetriever.setUseAccessTokenProperty(true)
         ImageRetriever.setHostProperty(MapStyle.MAPBOX_STREETS)
         view = MapView()

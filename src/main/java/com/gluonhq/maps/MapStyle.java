@@ -17,5 +17,4 @@ public interface MapStyle {
     public static final String MAPBOX_EMERALD = "http://api.mapbox.com/v4/mapbox.emerald/";
     public static final String MAPBOX_HIGH_CONTRAST = "http://api.mapbox.com/v4/mapbox.high-contrast/";
 
-    public static final String MAPBOX_ACCESS_TOKEN = "?access_token=";
 }

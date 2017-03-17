@@ -60,6 +60,8 @@ public class ImageRetriever {
     private static DesktopStorageService desktopStorageService = new DesktopStorageService();
     private static BooleanProperty useAccessTokenProperty = new SimpleBooleanProperty(false);
     private static StringProperty hostProperty = new SimpleStringProperty(MapStyle.OSM_DEFAULT);
+    private static String mapboxAccessToken;
+
     static {
         try {
             File storageRoot = desktopStorageService
@@ -113,7 +115,7 @@ public class ImageRetriever {
         if (image == null) {
             StringBuilder urlString = new StringBuilder(hostProperty.get() + zoom + "/" + i + "/" + j + ".png");
             if (useAccessTokenProperty.get()) {
-                urlString.append(MapStyle.MAPBOX_ACCESS_TOKEN);
+                urlString.append(mapboxAccessToken);
             }
             if (hasFileCache) {
                 Task<Object> task = new Task() {
@@ -152,6 +154,14 @@ public class ImageRetriever {
             return answer;
         }
         return null;
+    }
+
+    public String getMapboxAccessToken() {
+        return mapboxAccessToken;
+    }
+
+    public static void setMapboxAccessToken(String mapboxAccessToken) {
+        ImageRetriever.mapboxAccessToken = mapboxAccessToken;
     }
 
     private static class CacheThread extends Thread {
