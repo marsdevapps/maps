@@ -36,10 +36,19 @@ import java.util.Optional;
  */
 public class DesktopStorageService {
 
+    private String storageDirectory = System.getProperty("user.home") + ".gluon";
+
+    public String getStorageDirectory() {
+        return storageDirectory;
+    }
+
+    public void setStorageDirectory(String storageDirectory) {
+        this.storageDirectory = storageDirectory;
+    }
+
     public Optional<File> getPrivateStorage() {
         try {
-            String home = System.getProperty("user.home");
-            File f = new File(home, ".gluon");
+            File f = new File(storageDirectory);
             if (!f.isDirectory()) {
                 f.mkdirs();
             }

@@ -27,7 +27,8 @@
  */
 package com.gluonhq.impl.maps;
 
-import javafx.beans.property.ReadOnlyDoubleProperty;
+import com.gluonhq.maps.MapStyle;
+import javafx.beans.property.*;
 import javafx.concurrent.Task;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -53,12 +54,12 @@ public class ImageRetriever {
 
     private static final Logger logger = Logger.getLogger( ImageRetriever.class.getName() );
 
-    static String host = "http://tile.openstreetmap.org/";
     static File cacheRoot;
     static boolean hasFileCache = false;
     static CacheThread cacheThread = null;
     private static DesktopStorageService desktopStorageService = new DesktopStorageService();
-
+    private static BooleanProperty useAccessTokenProperty = new SimpleBooleanProperty(false);
+    private static StringProperty hostProperty = new SimpleStringProperty(MapStyle.OSM_DEFAULT);
     static {
         try {
             File storageRoot = desktopStorageService
@@ -83,22 +84,49 @@ public class ImageRetriever {
         }
     }
 
+    public static String getHostProperty() {
+        return hostProperty.get();
+    }
+
+    public static void setHostProperty(String hostProperty) {
+        ImageRetriever.hostProperty.set(hostProperty);
+    }
+
+    public static StringProperty hostPropertyProperty() {
+        return hostProperty;
+    }
+
+    public static boolean isUseAccessTokenProperty() {
+        return useAccessTokenProperty.get();
+    }
+
+    public static void setUseAccessTokenProperty(boolean useAccessTokenProperty) {
+        ImageRetriever.useAccessTokenProperty.set(useAccessTokenProperty);
+    }
+
+    public static BooleanProperty useAccessTokenPropertyProperty() {
+        return useAccessTokenProperty;
+    }
+
     static ReadOnlyDoubleProperty fillImage(ImageView imageView, int zoom, long i, long j) {
         Image image = fromFileCache(zoom, i, j);
         if (image == null) {
-            String urlString = host + zoom + "/" + i + "/" + j + ".png";
+            StringBuilder urlString = new StringBuilder(hostProperty.get() + zoom + "/" + i + "/" + j + ".png");
+            if (useAccessTokenProperty.get()) {
+                urlString.append(MapStyle.MAPBOX_ACCESS_TOKEN);
+            }
             if (hasFileCache) {
                 Task<Object> task = new Task() {
                     @Override
                     protected Object call() throws Exception {
-                        cacheThread.cacheImage(urlString, zoom, i, j);
+                        cacheThread.cacheImage(urlString.toString(), zoom, i, j);
                         return null; // can't return image yet
                     }
                 };
                 Thread t = new Thread(task);
                 t.start();
             }
-            image = new Image(urlString, true);
+            image = new Image(urlString.toString(), true);
         }
         imageView.setImage(image);
         return image.progressProperty();

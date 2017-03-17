@@ -30,6 +30,8 @@ package com.gluonhq.impl.maps;
 import com.gluonhq.maps.MapView;
 import com.sun.javafx.tk.Toolkit;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
@@ -46,8 +48,6 @@ import java.util.logging.Logger;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleWrapper;
 
 /**
  *
@@ -56,39 +56,30 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  */
 public class BaseMap extends Group {
 
-    private static final Logger logger = Logger.getLogger( BaseMap.class.getName() );
-
     /**
      * When the zoom-factor is less than TIPPING below an integer, we will use
      * the higher-level zoom and scale down.
      */
     public static final double TIPPING = 0.2;
-
     /**
      * The maximum zoom level this map supports.
      */
     public static final int MAX_ZOOM = 20;
+    private static final Logger logger = Logger.getLogger(BaseMap.class.getName());
     private final Map<Long, SoftReference<MapTile>>[] tiles = new HashMap[MAX_ZOOM];
-
-    private double lat;
-    private double lon;
-    private boolean abortedTileLoad;
-
 //    static final boolean DEBUG = false;
     private final Rectangle area;
     private final ReadOnlyDoubleWrapper centerLon = new ReadOnlyDoubleWrapper();
     private final ReadOnlyDoubleWrapper centerLat = new ReadOnlyDoubleWrapper();
     private final ReadOnlyDoubleWrapper zoom = new ReadOnlyDoubleWrapper();
-    
     private final DoubleProperty prefCenterLon = new SimpleDoubleProperty();
     private final DoubleProperty prefCenterLat = new SimpleDoubleProperty();
     private final DoubleProperty prefZoom = new SimpleDoubleProperty();
-    
-    private double zoomValue;
-
-
-
     public double x0, y0;
+    private double lat;
+    private double lon;
+    private boolean abortedTileLoad;
+    private double zoomValue;
     private boolean dirty = true;
 
     private final ChangeListener<Number> resizeListener = (o, oldValue, newValue) -> markDirty();
@@ -139,13 +130,13 @@ public class BaseMap extends Group {
         prefCenterLon.set(lon);
     }
 
+    public Point2D getCenter() {
+        return new Point2D(prefCenterLat.get(), prefCenterLon.get());
+    }
+
     public void setCenter(Point2D center) {
         prefCenterLat.set(center.getX());
         prefCenterLon.set(center.getY());
-    }
-
-    public Point2D getCenter() {
-        return new Point2D(prefCenterLat.get(), prefCenterLon.get());
     }
 
     private void doSetCenter(double lat, double lon) {
@@ -205,21 +196,22 @@ public class BaseMap extends Group {
     }
 
     /**
+     * Returns the preferred zoom level of this map.
+     *
+     * @return the zoom level
+     */
+    public double getZoom() {
+        return prefZoom.get();
+    }
+
+    /**
      * set the zoom level of the map to the specified value
      * @param z the new zoom level
      */
     public void setZoom(double z) {
         logger.fine("setZoom called");
         prefZoom.set(z);
-        
-    }
 
-    /**
-     * Returns the preferred zoom level of this map.
-     * @return the zoom level
-     */
-    public double getZoom() {
-        return prefZoom.get();
     }
 
     private void doZoom(double z) {
@@ -268,8 +260,6 @@ public class BaseMap extends Group {
         }
         logger.fine("after, zp = " + zoom.get() + ", tx = " + getTranslateX());
     }
-
-
 
     public Point2D getMapPoint(double lat, double lon) {
         return getMapPoint(zoom.get(), lat, lon);
@@ -450,7 +440,6 @@ public class BaseMap extends Group {
         }
 
     }
-
 
     private MapTile getCoveringTile(MapTile tile) {
         int z = tile.myZoom;

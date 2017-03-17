@@ -27,8 +27,10 @@
  */
 package com.marsdev.maps.demo
 
+import com.gluonhq.impl.maps.ImageRetriever
 import com.gluonhq.maps.MapLayer
 import com.gluonhq.maps.MapPoint
+import com.gluonhq.maps.MapStyle
 import com.gluonhq.maps.MapView
 import com.gluonhq.maps.demo.PoiLayer
 import javafx.geometry.Pos
@@ -43,6 +45,8 @@ class MapTestView : View("Map Demo") {
     val view: MapView
 
     init {
+        ImageRetriever.setUseAccessTokenProperty(true)
+        ImageRetriever.setHostProperty(MapStyle.MAPBOX_STREETS)
         view = MapView()
         view.addLayer(myDemoLayer())
         view.setCenter(50.8458, 4.724)
